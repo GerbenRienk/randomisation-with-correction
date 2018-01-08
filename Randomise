@@ -1,0 +1,31 @@
+Function RandomiseParticipant()
+'randomisation for study
+'two arms and participants should be distributed evenly
+'first ten should be randomised without any correction
+
+Dim intRandomisedParticipants As Integer                'counter to see if the first 10 are randomised without correction
+Dim sngOutcome As Single                                'holds first the outcome of rnd-function, and then the arm
+Dim sngAverage As Single                                'average of the already randomised participants
+Const sngTarget = 0.5                                   'our preferred average
+Const sngCorrFactor = 60                                'correction factor to get to ouur preferred average
+
+'start with really randomising
+Call Randomize
+'now count the number of participants already randomised
+intRandomisedParticipants = DCount("KorteLangeApp", "tblDeelnemers", "True")
+'and if there's more than zero, find the average
+If intRandomisedParticipants > 0 Then sngAverage = (DAvg("KorteLangeApp", "tblDeelnemers", "not KorteLangeApp is null") - 1)
+
+'let the first 10 be randomised without correction: do this by setting the average to the target, so there will be no correction
+If intRandomisedParticipants < 10 Then sngAverage = sngTarget
+'now get a random number between 0 and 1
+sngOutcome = (Rnd())
+If sngOutcome < sngTarget + ((sngAverage - sngTarget) * sngCorrFactor) Then
+    sngOutcome = 0
+Else
+    sngOutcome = 1
+End If
+
+'return the outcome
+RandomiseParticipant = sngOutcome
+End Function
